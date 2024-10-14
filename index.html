@@ -14,6 +14,10 @@
         <!-- Inventario -->
         <div class="inventory">
             <h2>Inventario</h2>
+
+            <!-- Barra de búsqueda -->
+            <input type="text" id="search-input" placeholder="Buscar producto...">
+
             <table>
                 <thead>
                     <tr>
@@ -39,14 +43,20 @@
                         <th>Precio</th>
                         <th>Cantidad</th>
                         <th>Total</th>
-                        <th>Eliminar</th> <!-- Nueva columna para eliminar -->
+                        <th>Eliminar</th>
                     </tr>
                 </thead>
                 <tbody id="cart-list">
                     <!-- El carrito se llenará aquí -->
                 </tbody>
             </table>
+
             <p id="total-price">Total: $0.00</p>
+            
+            <!-- Campo para el nombre del cliente -->
+            <label for="client-name">Nombre del Cliente:</label>
+            <input type="text" id="client-name" placeholder="Ingrese nombre del cliente">
+
             <button id="checkout">Generar Factura</button>
         </div>
     </div>
@@ -58,6 +68,7 @@
             <thead>
                 <tr>
                     <th>ID Factura</th>
+                    <th>Cliente</th>
                     <th>Total</th>
                     <th>Estado</th>
                     <th>Acción</th>
@@ -68,6 +79,8 @@
             </tbody>
         </table>
     </div>
+
+    <a href="gestion.html">Gestión de Inventario</a>
 
     <script src="app.js"></script>
 </body>
