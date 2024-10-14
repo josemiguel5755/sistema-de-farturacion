@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulación de Facturación</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+
+    <h1>Sistema de Facturación e Inventario</h1>
+
+    <div class="container">
+        <!-- Inventario -->
+        <div class="inventory">
+            <h2>Inventario</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                        <th>Agregar</th>
+                    </tr>
+                </thead>
+                <tbody id="product-list">
+                    <!-- Los productos se cargarán aquí -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Carrito de compras -->
+        <div class="cart">
+            <h2>Carrito de Compras</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Precio</th>
+                        <th>Cantidad</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="cart-list">
+                    <!-- El carrito se llenará aquí -->
+                </tbody>
+            </table>
+            <p id="total-price">Total: $0.00</p>
+            <button id="checkout">Generar Factura</button>
+        </div>
+    </div>
+
+    <!-- Cuentas por cobrar -->
+    <div class="accounts">
+        <h2>Cuentas por Cobrar</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID Factura</th>
+                    <th>Total</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody id="accounts-list">
+                <!-- Las cuentas por cobrar se agregarán aquí -->
+            </tbody>
+        </table>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
