@@ -54,6 +54,24 @@ function addToCart(productId) {
     }
 }
 
+// Eliminar un producto del carrito
+function removeFromCart(productId) {
+    let cartItem = cart.find(item => item.id === productId);
+
+    if (cartItem) {
+        // Devolver el stock al inventario
+        let product = products.find(p => p.id === productId);
+        product.stock += cartItem.quantity;
+
+        // Eliminar el producto del carrito
+        cart = cart.filter(item => item.id !== productId);
+
+        // Actualizar la vista del carrito y el inventario
+        loadCart();
+        loadInventory();
+    }
+}
+
 // Cargar el carrito de compras en la tabla
 function loadCart() {
     let cartList = document.getElementById('cart-list');
@@ -71,6 +89,7 @@ function loadCart() {
                 <td>$${item.price.toFixed(2)}</td>
                 <td>${item.quantity}</td>
                 <td>$${totalItemPrice.toFixed(2)}</td>
+                <td><button onclick="removeFromCart(${item.id})">Eliminar</button></td> <!-- Botón de eliminar -->
             </tr>
         `;
     });
