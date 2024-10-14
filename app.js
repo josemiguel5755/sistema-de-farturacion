@@ -54,17 +54,22 @@ function addToCart(productId) {
     }
 }
 
-// Eliminar un producto del carrito
+// Reducir la cantidad de un producto del carrito
 function removeFromCart(productId) {
     let cartItem = cart.find(item => item.id === productId);
 
     if (cartItem) {
+        if (cartItem.quantity > 1) {
+            // Reducir cantidad del producto en el carrito
+            cartItem.quantity--;
+        } else {
+            // Si la cantidad es 1, eliminar el producto del carrito
+            cart = cart.filter(item => item.id !== productId);
+        }
+
         // Devolver el stock al inventario
         let product = products.find(p => p.id === productId);
-        product.stock += cartItem.quantity;
-
-        // Eliminar el producto del carrito
-        cart = cart.filter(item => item.id !== productId);
+        product.stock++;
 
         // Actualizar la vista del carrito y el inventario
         loadCart();
@@ -89,7 +94,7 @@ function loadCart() {
                 <td>$${item.price.toFixed(2)}</td>
                 <td>${item.quantity}</td>
                 <td>$${totalItemPrice.toFixed(2)}</td>
-                <td><button onclick="removeFromCart(${item.id})">Eliminar</button></td> <!-- Botón de eliminar -->
+                <td><button onclick="removeFromCart(${item.id})">-</button></td> <!-- Botón de reducir cantidad -->
             </tr>
         `;
     });
