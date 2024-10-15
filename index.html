@@ -16,11 +16,12 @@
             <h2>Inventario</h2>
 
             <!-- Barra de búsqueda -->
-            <input type="text" id="search-input" placeholder="Buscar producto...">
+            <input type="text" id="search-input" placeholder="Buscar producto o código...">
 
             <table>
                 <thead>
                     <tr>
+                        <th>Código</th>
                         <th>Producto</th>
                         <th>Precio</th>
                         <th>Stock</th>
@@ -57,6 +58,27 @@
             <label for="client-name">Nombre del Cliente:</label>
             <input type="text" id="client-name" placeholder="Ingrese nombre del cliente">
 
+            <!-- Opción de contado o crédito -->
+            <label for="payment-type">Tipo de Pago:</label>
+            <select id="payment-type">
+                <option value="contado">Contado</option>
+                <option value="credito">Crédito</option>
+                <option value="tarjeta">Debito/credito</option>
+            </select>
+
+            <!-- Formulario adicional para crear cliente (si se selecciona crédito) -->
+            <div id="credit-client-form" style="display: none;">
+                <h3>Crear Cliente (Crédito)</h3>
+                <label for="client-id">ID del Cliente:</label>
+                <input type="text" id="client-id" placeholder="Ingrese ID del cliente">
+                
+                <label for="client-address">Dirección del Cliente:</label>
+                <input type="text" id="client-address" placeholder="Ingrese dirección del cliente">
+
+                <label for="client-phone">Teléfono del Cliente:</label>
+                <input type="text" id="client-phone" placeholder="Ingrese teléfono del cliente">
+            </div>
+
             <button id="checkout">Generar Factura</button>
         </div>
     </div>
@@ -70,6 +92,7 @@
                     <th>ID Factura</th>
                     <th>Cliente</th>
                     <th>Total</th>
+                    <th>Tipo de Pago</th>
                     <th>Estado</th>
                     <th>Acción</th>
                 </tr>
