@@ -1,191 +1,167 @@
 let products = [
-    { code: 'P001', name: 'Laptop', price: 1200, stock: 10 },
-    { code: 'P002', name: 'Mouse', price: 25, stock: 50 },
-    { code: 'P003', name: 'Teclado', price: 45, stock: 30 },
-    { code: 'P004', name: 'Monitor', price: 300, stock: 15 }
+    { code: '001', name: 'Producto A', priceDetail: 10.00, priceBulk: 8.00, stock: 100 },
+    { code: '002', name: 'Producto B', priceDetail: 15.00, priceBulk: 12.00, stock: 50 },
+    { code: '003', name: 'Producto C', priceDetail: 20.00, priceBulk: 18.00, stock: 30 },
 ];
 
-let cart = [];
-let totalPrice = 0;
-let facturaId = 1;
-let accountsReceivable = [];
+let cart = []; // Variable para almacenar el carrito
+let invoiceId = 1; // ID inicial para las facturas
+let accounts = []; // Para almacenar cuentas por cobrar
 
-// Cargar productos en el inventario
-function loadInventory(productsToShow = products) {
-    const productList = document.getElementById('product-list');
-    productList.innerHTML = '';
+window.onload = function() {
+    displayProducts(products);
+};
 
-    productsToShow.forEach((product, index) => {
+// Function to filter products based on input
+function filterProducts() {
+    const searchInput = document.getElementById('search-input').value.toLowerCase();
+    const filteredProducts = products.filter(product => 
+        product.name.toLowerCase().includes(searchInput) || product.code.includes(searchInput)
+    );
+    displayProducts(filteredProducts);
+}
+
+function displayProducts(productList) {
+    const productListElement = document.getElementById('product-list');
+    productListElement.innerHTML = ''; // Limpiar la lista de productos antes de mostrar los filtrados
+    productList.forEach(product => {
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${product.code}</td>
             <td>${product.name}</td>
-            <td>$${product.price.toFixed(2)}</td>
+            <td>${product.priceDetail.toFixed(2)}</td>
+            <td>${product.priceBulk.toFixed(2)}</td>
             <td>${product.stock}</td>
-            <td><button onclick="addToCart(${index})">Agregar</button></td>
+            <td><button onclick="addToCart('${product.code}')">Agregar</button></td>
         `;
-        productList.appendChild(row);
+        productListElement.appendChild(row);
     });
 }
 
-// Agregar producto al carrito
-function addToCart(index) {
-    const product = products[index];
-    if (product.stock > 0) {
-        product.stock--;
-        const cartItem = cart.find(item => item.name === product.name);
+// Function to add product to cart
+function addToCart(code) {
+    const product = products.find(p => p.code === code);
+    const cartItem = cart.find(item => item.product.code === code);
+
+    if (product.stock > 0) { // Comprobar si hay stock disponible
         if (cartItem) {
             cartItem.quantity++;
-            cartItem.total += product.price;
         } else {
-            cart.push({ ...product, quantity: 1, total: product.price });
+            cart.push({ product, quantity: 1 });
         }
+        product.stock--; // Disminuir el stock
         updateCart();
-        loadInventory(); // Recargar inventario para actualizar el stock
     } else {
-        alert('Producto sin stock');
+        alert('No hay suficiente stock para agregar este producto al carrito.');
     }
 }
 
-// Actualizar el carrito
+// Function to update the cart display
 function updateCart() {
-    const cartList = document.getElementById('cart-list');
-    cartList.innerHTML = '';
-    totalPrice = 0;
+    const cartListElement = document.getElementById('cart-list');
+    cartListElement.innerHTML = '';
+    let totalPrice = 0;
 
-    cart.forEach((item, index) => {
-        totalPrice += item.total;
+    cart.forEach(item => {
+        const totalItemPrice = item.product.priceDetail * item.quantity;
+        totalPrice += totalItemPrice;
+
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${item.name}</td>
-            <td>$${item.price.toFixed(2)}</td>
-            <td>${item.quantity}</td>
-            <td>$${item.total.toFixed(2)}</td>
-            <td><button onclick="removeFromCart(${index})">Eliminar</button></td>
+            <td>${item.product.name}</td>
+            <td>${item.product.priceDetail.toFixed(2)}</td>
+            <td>
+                <input type="number" value="${item.quantity}" min="1" onchange="updateQuantity('${item.product.code}', this.value)">
+            </td>
+            <td>${totalItemPrice.toFixed(2)}</td>
+            <td><button onclick="removeFromCart('${item.product.code}')">Eliminar</button></td>
         `;
-        cartList.appendChild(row);
+        cartListElement.appendChild(row);
     });
 
-    document.getElementById('total-price').innerText = `Total: $${totalPrice.toFixed(2)}`;
+    document.getElementById('total-price').textContent = `Total: $${totalPrice.toFixed(2)}`;
 }
 
-// Eliminar producto del carrito
-function removeFromCart(index) {
-    const item = cart[index];
-    const product = products.find(p => p.name === item.name);
-
-    if (item.quantity > 1) {
-        item.quantity--;
-        item.total -= item.price;
-    } else {
-        cart.splice(index, 1);
+// Function to update quantity of products in the cart
+function updateQuantity(code, quantity) {
+    const cartItem = cart.find(item => item.product.code === code);
+    if (cartItem) {
+        cartItem.quantity = parseInt(quantity);
+        updateCart();
     }
-
-    product.stock++;
-    updateCart();
-    loadInventory(); // Recargar inventario para actualizar el stock
 }
 
-// Mostrar/ocultar formulario de crédito según el tipo de pago seleccionado
-document.getElementById('payment-type').addEventListener('change', function(event) {
-    const paymentType = event.target.value;
-    const creditForm = document.getElementById('credit-client-form');
-    if (paymentType === 'credito') {
-        creditForm.style.display = 'block';
-    } else {
-        creditForm.style.display = 'none';
+// Function to remove a product from the cart
+function removeFromCart(code) {
+    const cartItem = cart.find(item => item.product.code === code);
+    if (cartItem) {
+        cartItem.product.stock += cartItem.quantity; // Devolver stock al producto
+        cart = cart.filter(item => item.product.code !== code);
+        updateCart();
     }
-});
+}
 
-// Generar factura
-document.getElementById('checkout').addEventListener('click', function() {
-    const clientName = document.getElementById('client-name').value.trim();
+// Function to toggle credit client form visibility
+function toggleCreditForm() {
     const paymentType = document.getElementById('payment-type').value;
+    const creditForm = document.getElementById('credit-client-form');
+    creditForm.style.display = paymentType === 'credito' ? 'block' : 'none';
+}
 
-    if (cart.length === 0) {
-        alert('El carrito está vacío.');
-        return;
-    }
-    
-    if (!clientName) {
-        alert('Debe ingresar el nombre del cliente.');
-        return;
-    }
+// Function to generate invoice
+function generateInvoice() {
+    const clientName = document.getElementById('client-name').value;
+    const paymentType = document.getElementById('payment-type').value;
+    const total = parseFloat(document.getElementById('total-price').textContent.replace('Total: $', ''));
 
-    // Si el pago es a crédito, obtener más datos del cliente
-    if (paymentType === 'credito') {
-        const clientId = document.getElementById('client-id').value.trim();
-        const clientAddress = document.getElementById('client-address').value.trim();
-        const clientPhone = document.getElementById('client-phone').value.trim();
-
-        if (!clientId || !clientAddress || !clientPhone) {
-            alert('Debe completar todos los campos del cliente para el pago a crédito.');
-            return;
-        }
-
-        // Agregar el cliente a cuentas por cobrar
-        accountsReceivable.push({
-            facturaId: facturaId,
-            clientName: clientName,
-            total: totalPrice,
-            paymentType: 'Crédito',
-            clientId: clientId,
-            clientAddress: clientAddress,
-            clientPhone: clientPhone,
+    if (clientName && total > 0) {
+        const invoice = {
+            id: invoiceId++,
+            client: clientName,
+            total: total,
+            paymentType: paymentType,
             status: 'Pendiente'
-        });
+        };
+        accounts.push(invoice);
+        displayAccounts();
+        clearCart();
+        alert('Factura generada con éxito!');
     } else {
-        // Si es al contado
-        accountsReceivable.push({
-            facturaId: facturaId,
-            clientName: clientName,
-            total: totalPrice,
-            paymentType: 'Contado',
-            status: 'Pagado'
-        });
+        alert('Por favor, complete los campos necesarios.');
     }
+}
 
-    facturaId++;
-    cart = [];
-    updateCart();
-    updateAccountsReceivable();
-});
+// Function to display accounts receivable
+function displayAccounts() {
+    const accountsListElement = document.getElementById('accounts-list');
+    accountsListElement.innerHTML = '';
 
-// Actualizar la lista de cuentas por cobrar
-function updateAccountsReceivable() {
-    const accountsList = document.getElementById('accounts-list');
-    accountsList.innerHTML = '';
-
-    accountsReceivable.forEach(account => {
+    accounts.forEach(account => {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${account.facturaId}</td>
-            <td>${account.clientName}</td>
-            <td>$${account.total.toFixed(2)}</td>
+            <td>${account.id}</td>
+            <td>${account.client}</td>
+            <td>${account.total.toFixed(2)}</td>
             <td>${account.paymentType}</td>
             <td>${account.status}</td>
-            <td><button onclick="markAsPaid(${account.facturaId})">Marcar como pagado</button></td>
+            <td><button onclick="payInvoice(${account.id})">Marcar como Pagado</button></td>
         `;
-        accountsList.appendChild(row);
+        accountsListElement.appendChild(row);
     });
 }
 
-// Marcar como pagado en cuentas por cobrar
-function markAsPaid(facturaId) {
-    const account = accountsReceivable.find(a => a.facturaId === facturaId);
+// Function to mark an invoice as paid
+function payInvoice(invoiceId) {
+    const account = accounts.find(a => a.id === invoiceId);
     if (account) {
         account.status = 'Pagado';
-        updateAccountsReceivable();
+        displayAccounts();
     }
 }
 
-// Filtrar productos por búsqueda
-document.getElementById('search-input').addEventListener('input', function(event) {
-    const searchTerm = event.target.value.toLowerCase();
-    const filteredProducts = products.filter(product =>
-        product.name.toLowerCase().includes(searchTerm) || product.code.toLowerCase().includes(searchTerm)
-    );
-    loadInventory(filteredProducts);
-});
-
-loadInventory();
+// Function to clear the cart after generating an invoice
+function clearCart() {
+    cart.forEach(item => item.product.stock += item.quantity); // Devolver stock a los productos
+    cart = [];
+    updateCart();
+}

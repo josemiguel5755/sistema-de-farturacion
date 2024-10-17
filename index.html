@@ -16,14 +16,15 @@
             <h2>Inventario</h2>
 
             <!-- Barra de búsqueda -->
-            <input type="text" id="search-input" placeholder="Buscar producto o código...">
+            <input type="text" id="search-input" placeholder="Buscar producto o código..." oninput="filterProducts()">
 
             <table>
                 <thead>
                     <tr>
                         <th>Código</th>
                         <th>Producto</th>
-                        <th>Precio</th>
+                        <th>Precio Detalle</th>
+                        <th>Precio Mayor</th>
                         <th>Stock</th>
                         <th>Agregar</th>
                     </tr>
@@ -60,10 +61,10 @@
 
             <!-- Opción de contado o crédito -->
             <label for="payment-type">Tipo de Pago:</label>
-            <select id="payment-type">
+            <select id="payment-type" onchange="toggleCreditForm()">
                 <option value="contado">Contado</option>
                 <option value="credito">Crédito</option>
-                <option value="tarjeta">Debito/credito</option>
+                <option value="tarjeta">Débito/Crédito</option>
             </select>
 
             <!-- Formulario adicional para crear cliente (si se selecciona crédito) -->
@@ -79,7 +80,7 @@
                 <input type="text" id="client-phone" placeholder="Ingrese teléfono del cliente">
             </div>
 
-            <button id="checkout">Generar Factura</button>
+            <button id="checkout" onclick="generateInvoice()">Generar Factura</button>
         </div>
     </div>
 
